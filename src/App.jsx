@@ -1,23 +1,22 @@
-import React, { useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
-  Users,
-  Clock,
-  TrendingUp,
-  DollarSign,
-  Play,
+  BarChart3,
   Calendar,
   CheckCircle2,
+  Clock,
+  DollarSign,
   History,
-  BarChart3,
-  Menu,
-  X,
   MessageSquare,
+  Play,
+  Plus,
   Sparkles,
-  BadgeDollarSign
+  TrendingUp,
+  Users,
+  X,
 } from 'lucide-react';
 
 function Toast({ message, visible, onClose }) {
-  React.useEffect(() => {
+  useEffect(() => {
     if (!visible) return undefined;
     const timer = setTimeout(onClose, 4000);
     return () => clearTimeout(timer);
@@ -25,9 +24,11 @@ function Toast({ message, visible, onClose }) {
 
   return (
     <div className={`toast ${visible ? 'visible' : ''}`}>
-      <span className="toast-icon"><CheckCircle2 size={16} /></span>
+      <span className="toast-icon">
+        <CheckCircle2 size={16} />
+      </span>
       <span>{message}</span>
-      <button className="icon-button" onClick={onClose} aria-label="Close notification">
+      <button className="toast-close" onClick={onClose} aria-label="Close notification">
         <X size={16} />
       </button>
     </div>
@@ -35,12 +36,11 @@ function Toast({ message, visible, onClose }) {
 }
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState('dashboard');
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isRunning, setIsRunning] = useState(false);
   const [showSuccessBanner, setShowSuccessBanner] = useState(false);
   const [showToast, setShowToast] = useState(false);
   const [automationRunCount, setAutomationRunCount] = useState(0);
+  const [newMember, setNewMember] = useState({ name: '', expiry: '', phone: '' });
 
   const [metrics, setMetrics] = useState({
     totalMembers: 150,
@@ -62,12 +62,11 @@ export default function App() {
     { id: 3, type: 'Renewal', title: 'Member renewal confirmed', desc: 'Mike replied YES to reminder. Subscription renewed automatically.', time: 'Yesterday 4:15 PM', status: 'success' },
   ]);
 
-  const navigation = [
-    { id: 'dashboard', icon: <Users size={18} />, label: 'Dashboard' },
-    { id: 'members', icon: <Calendar size={18} />, label: 'Members' },
-    { id: 'logs', icon: <History size={18} />, label: 'Automation Logs' },
-    { id: 'analytics', icon: <BarChart3 size={18} />, label: 'Analytics' },
-  ];
+  const remindersSent = useMemo(() => 12 + automationRunCount, [automationRunCount]);
+
+  const scrollToDashboard = () => {
+    document.getElementById('dashboard')?.scrollIntoView({ behavior: 'smooth' });
+  };
 
   const handleRunAutomation = () => {
     setIsRunning(true);
@@ -85,7 +84,7 @@ export default function App() {
         ...prev,
         renewalRate: 81,
         revenueSaved: 2950,
-        expiringThisWeek: 11,
+        expiringThisWeek: Math.max(prev.expiringThisWeek - 1, 0),
       }));
       const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
       setLogs((prev) => [
@@ -93,6 +92,33 @@ export default function App() {
         ...prev,
       ]);
     }, 2000);
+  };
+
+  const handleAddMember = (event) => {
+    event.preventDefault();
+    if (!newMember.name.trim() || !newMember.expiry.trim()) return;
+
+    const member = {
+      id: Date.now(),
+      name: newMember.name.trim(),
+      expiry: newMember.expiry.trim(),
+      phone: newMember.phone.trim() || 'Not provided',
+      status: 'Pending',
+    };
+
+    setMembers((prev) => [member, ...prev]);
+    setMetrics((prev) => ({
+      ...prev,
+      totalMembers: prev.totalMembers + 1,
+      expiringThisWeek: prev.expiringThisWeek + 1,
+      potentialRevenue: prev.potentialRevenue + 300,
+    }));
+    setLogs((prev) => [
+      { id: Date.now() + 1, type: 'Member', title: 'New member added', desc: `${member.name} was added to renewal tracking.`, time: 'Just now', status: 'success' },
+      ...prev,
+    ]);
+    setNewMember({ name: '', expiry: '', phone: '' });
+    setShowToast(true);
   };
 
   const getStatusBadge = (status) => {
@@ -108,163 +134,187 @@ export default function App() {
     }
   };
 
-  const renderNavigation = (mobile = false) => (
-    <nav className="nav-links">
-      {navigation.map(({ id, icon, label }) => (
-        <button
-          key={id}
-          className={`nav-button ${activeTab === id ? 'active' : ''}`}
-          onClick={() => {
-            setActiveTab(id);
-            if (mobile) setIsMobileMenuOpen(false);
-          }}
-        >
-          {icon}
-          {label}
-        </button>
-      ))}
-    </nav>
-  );
-
   return (
-    <div className="app-container">
+    <div className="site-shell">
       <Toast
-        message="12 reminders sent successfully"
+        message={automationRunCount > 0 ? '12 reminders sent successfully' : 'Member saved successfully'}
         visible={showToast}
         onClose={() => setShowToast(false)}
       />
 
-      <aside className="sidebar">
-        <div className="logo-container">
-          <div className="logo-icon">G</div>
-          <span className="logo-text">GymFlow</span>
-        </div>
-        {renderNavigation()}
-        <div className="sidebar-footer">GymFlow Demo v1.0</div>
-      </aside>
-
-      <header className="mobile-header">
-        <div className="logo-container mobile-logo">
-          <div className="logo-icon">G</div>
-          <span className="logo-text">GymFlow</span>
-        </div>
-        <button className="mobile-nav-toggle" onClick={() => setIsMobileMenuOpen(true)} aria-label="Open menu">
-          <Menu size={24} />
-        </button>
-      </header>
-
-      {isMobileMenuOpen && (
-        <div className="mobile-menu-overlay" onClick={() => setIsMobileMenuOpen(false)}>
-          <div className="mobile-sidebar open" onClick={(event) => event.stopPropagation()}>
-            <div className="mobile-sidebar-header">
-              <div className="logo-container mobile-logo">
-                <div className="logo-icon">G</div>
-                <span className="logo-text">GymFlow</span>
-              </div>
-              <button className="mobile-nav-toggle" onClick={() => setIsMobileMenuOpen(false)} aria-label="Close menu">
-                <X size={24} />
-              </button>
-            </div>
-            {renderNavigation(true)}
-            <div className="sidebar-footer">GymFlow Demo v1.0</div>
+      <section className="hero-page" id="home">
+        <nav className="hero-nav glass-panel">
+          <div className="hero-logo">
+            <span className="hero-logo-mark">G</span>
+            <span>GymFlow</span>
           </div>
-        </div>
-      )}
+          <div className="hero-links">
+            <a href="#home">Home</a>
+            <a href="#dashboard">Dashboard</a>
+            <a href="#members">Members</a>
+            <a href="#analytics">Analytics</a>
+          </div>
+          <button className="glass-button nav-cta" onClick={scrollToDashboard}>
+            Open Dashboard
+          </button>
+        </nav>
 
-      <main className="main-content">
-        {showSuccessBanner && (
-          <div className="success-banner">
-            <div className="success-banner-left">
-              <CheckCircle2 size={20} />
-              <span>Automation completed</span>
-            </div>
-            <button className="icon-button" onClick={() => setShowSuccessBanner(false)} aria-label="Close banner">
-              <X size={18} />
+        <div className="hero-content">
+          <p className="hero-kicker">Automated retention for modern fitness studios</p>
+          <h1>Renewals handled before members drift away.</h1>
+          <p className="hero-subtext">
+            GymFlow watches expiring memberships, triggers WhatsApp reminders, logs follow-ups,
+            and keeps your revenue recovery visible in one focused dashboard.
+          </p>
+          <div className="hero-actions">
+            <button className="hero-primary" onClick={scrollToDashboard}>
+              View Dashboard
+            </button>
+            <button className="hero-secondary" onClick={handleRunAutomation} disabled={isRunning}>
+              <Play size={16} fill="currentColor" />
+              {isRunning ? 'Running...' : 'Test Automation'}
             </button>
           </div>
-        )}
+        </div>
+      </section>
 
-        {activeTab === 'dashboard' && (
-          <div>
-            <div className="page-header">
-              <div className="header-title-container">
-                <h1 className="page-title">GymFlow Dashboard</h1>
-                <p className="page-subtitle">Monitor membership renewals and automated outreach logs.</p>
+      <section className="dashboard-page" id="dashboard">
+        <div className="dashboard-wrap">
+          {showSuccessBanner && (
+            <div className="success-banner">
+              <div className="success-banner-left">
+                <CheckCircle2 size={20} />
+                <span>Automation completed</span>
               </div>
-              <button className="btn btn-primary" onClick={handleRunAutomation} disabled={isRunning}>
-                <Play size={16} fill="currentColor" />
-                Run Automation
+              <button className="close-banner-btn" onClick={() => setShowSuccessBanner(false)} aria-label="Close banner">
+                <X size={18} />
               </button>
             </div>
+          )}
 
-            <div className="stats-grid five">
-              <StatCard label="Total Members" value={metrics.totalMembers} icon={<Users size={16} />} />
-              <StatCard label="Expiring This Week" value={metrics.expiringThisWeek} trend="-8.3%" icon={<Clock size={16} />} />
-              <StatCard label="Renewal Rate" value={`${metrics.renewalRate}%`} trend={automationRunCount > 0 ? '+6%' : undefined} icon={<TrendingUp size={16} />} />
-              <StatCard label="Revenue Saved" value={`$${metrics.revenueSaved}`} trend={automationRunCount > 0 ? '+$350' : undefined} icon={<DollarSign size={16} />} />
-              <div className="card stat-card recovery-card">
-                <div className="stat-header">
-                  <span className="stat-label">Potential Revenue Recovery</span>
-                  <div className="stat-icon-wrapper recovery"><BadgeDollarSign size={16} /></div>
-                </div>
-                <div className="stat-value-row">
-                  <span className="stat-value recovery-value">${metrics.potentialRevenue.toLocaleString()}</span>
-                </div>
-                <div className="stat-note">From pending & at-risk members</div>
-              </div>
+          <header className="dashboard-header">
+            <div>
+              <p className="section-kicker">Page 2 - Light Dashboard</p>
+              <h2>GymFlow Dashboard</h2>
+              <p>Monitor membership renewals, outreach logs, and recovery analytics.</p>
             </div>
+            <button className="btn btn-primary" onClick={handleRunAutomation} disabled={isRunning}>
+              <Play size={16} fill="currentColor" />
+              {isRunning ? 'Processing...' : 'Run Automation'}
+            </button>
+          </header>
 
-            <div className="action-banner">
-              <div className="banner-text-container">
-                <h3 className="banner-title">Automatic Renewal Follow-ups are Active</h3>
-                <p className="banner-desc">
-                  GymFlow scans your membership sheet daily, triggers WhatsApp reminders 7 days prior to expiry, and processes replies.
+          <div className="metrics-grid">
+            <MetricCard label="Total Members" value={metrics.totalMembers} icon={<Users size={18} />} />
+            <MetricCard label="Expiring This Week" value={metrics.expiringThisWeek} trend="-8.3%" icon={<Clock size={18} />} />
+            <MetricCard label="Renewal Rate" value={`${metrics.renewalRate}%`} trend={automationRunCount > 0 ? '+6%' : undefined} icon={<TrendingUp size={18} />} />
+            <MetricCard label="Revenue Saved" value={`$${metrics.revenueSaved}`} trend={automationRunCount > 0 ? '+$350' : undefined} icon={<DollarSign size={18} />} />
+            <MetricCard label="Potential Revenue" value={`$${metrics.potentialRevenue.toLocaleString()}`} icon={<DollarSign size={18} />} highlight note="From pending and at-risk members" />
+          </div>
+
+          <div className="dashboard-grid">
+            <section className="card form-card" id="members">
+              <div className="card-heading">
+                <div>
+                  <h3>Add Member</h3>
+                  <p>Add a new member to renewal tracking.</p>
+                </div>
+                <Plus size={18} />
+              </div>
+              <form className="member-form" onSubmit={handleAddMember}>
+                <label>
+                  Member name
+                  <input
+                    value={newMember.name}
+                    onChange={(event) => setNewMember((prev) => ({ ...prev, name: event.target.value }))}
+                    placeholder="Priya Sharma"
+                  />
+                </label>
+                <label>
+                  Expiry date
+                  <input
+                    value={newMember.expiry}
+                    onChange={(event) => setNewMember((prev) => ({ ...prev, expiry: event.target.value }))}
+                    placeholder="June 12"
+                  />
+                </label>
+                <label>
+                  WhatsApp number
+                  <input
+                    value={newMember.phone}
+                    onChange={(event) => setNewMember((prev) => ({ ...prev, phone: event.target.value }))}
+                    placeholder="+91 98765 43210"
+                  />
+                </label>
+                <button className="btn btn-primary" type="submit">
+                  <Plus size={16} />
+                  Add Member
+                </button>
+              </form>
+            </section>
+
+            <section className="card action-card">
+              <div>
+                <h3>Automatic Renewal Follow-ups are Active</h3>
+                <p>
+                  GymFlow scans your membership sheet daily, triggers WhatsApp reminders
+                  7 days prior to expiry, and processes replies.
                 </p>
-                <p className="whatsapp-line">
+                <span className="whatsapp-line">
                   <MessageSquare size={14} />
                   WhatsApp renewal reminders sent automatically
-                </p>
+                </span>
               </div>
               <button className="btn btn-primary" onClick={handleRunAutomation} disabled={isRunning}>
-                {isRunning ? 'Processing...' : 'Test Run Automation'}
+                {isRunning ? 'Processing...' : 'Test Run'}
               </button>
-            </div>
-
-            <div className="dashboard-grid-main">
-              <div className="card table-card">
-                <div className="section-heading">
-                  <h3>Expiring Soon</h3>
-                  <button className="btn btn-ghost" onClick={() => setActiveTab('members')}>View All</button>
-                </div>
-                <MembersTable members={members} getStatusBadge={getStatusBadge} compact />
-              </div>
-
-              <div className="card activities-card">
-                <h3 className="card-title">Automation Quick Feed</h3>
-                <Activity title="Daily Run Scheduler" subtitle="Runs automatically at 9:00 AM" badge="9:00 AM" />
-                <Activity title="Twilio WhatsApp Sandbox" subtitle="Messaging channel active" badge="Online" success />
-                <Activity title="Follow-up Window" subtitle="48 hrs without reply" extra="Next check: Tomorrow" />
-              </div>
-            </div>
+            </section>
           </div>
-        )}
 
-        {activeTab === 'members' && (
-          <div>
-            <PageHeader title="Members List" subtitle="Track individual memberships, expiry dates, and outreach status." />
+          <section className="card table-card">
+            <div className="card-heading">
+              <div>
+                <h3>Members Table</h3>
+                <p>Track individual memberships, expiry dates, and outreach status.</p>
+              </div>
+              <Calendar size={18} />
+            </div>
             <div className="table-container">
-              <MembersTable members={members} getStatusBadge={getStatusBadge} />
+              <table className="premium-table">
+                <thead>
+                  <tr>
+                    <th>Member Name</th>
+                    <th>Expiry Date</th>
+                    <th>Phone</th>
+                    <th>Outreach Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {members.map((member) => (
+                    <tr key={member.id}>
+                      <td className="member-name">{member.name}</td>
+                      <td>{member.expiry}</td>
+                      <td>{member.phone}</td>
+                      <td>{getStatusBadge(member.status)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
-          </div>
-        )}
+          </section>
 
-        {activeTab === 'logs' && (
-          <div>
-            <PageHeader title="Automation Logs" subtitle="Detailed records of automated notifications and system runs." />
-            <div className="stats-grid compact">
-              <StatCard label="Reminders Sent" value={12 + automationRunCount} />
-              <StatCard label="Follow-ups Completed" value={4} />
-              <StatCard label="Last Run Status" value="Today" note={automationRunCount > 0 ? 'Just Now' : '9:00 AM'} />
+          <section className="card logs-card">
+            <div className="card-heading">
+              <div>
+                <h3>Automation Logs</h3>
+                <p>Detailed records of automated notifications and system runs.</p>
+              </div>
+              <History size={18} />
+            </div>
+            <div className="log-summary-grid">
+              <MiniStat label="Reminders Sent" value={remindersSent} />
+              <MiniStat label="Follow-ups Completed" value="4" />
+              <MiniStat label="Last Run Status" value={automationRunCount > 0 ? 'Just Now' : '9:00 AM'} />
             </div>
             <div className="logs-list">
               {logs.map((log) => (
@@ -274,91 +324,94 @@ export default function App() {
                     {log.type === 'Reminder' && <Clock size={16} />}
                     {log.type === 'Renewal' && <CheckCircle2 size={16} />}
                     {log.type === 'Run' && <Sparkles size={16} />}
+                    {log.type === 'Member' && <Users size={16} />}
                   </div>
                   <div className="log-content">
                     <div className="log-header-row">
-                      <h4 className="log-title">{log.title}</h4>
-                      <span className="log-time">{log.time}</span>
+                      <h4>{log.title}</h4>
+                      <span>{log.time}</span>
                     </div>
-                    <p className="log-desc">{log.desc}</p>
+                    <p>{log.desc}</p>
                   </div>
                 </div>
               ))}
             </div>
-          </div>
-        )}
+          </section>
 
-        {activeTab === 'analytics' && (
-          <div>
-            <PageHeader title="Analytics" subtitle="Real-time charts illustrating campaign performance and revenue saved." />
-            <div className="charts-grid">
-              <div className="card chart-card">
-                <div className="chart-title-container">
-                  <h3 className="chart-title">Renewal Rate</h3>
-                  <p className="chart-desc">Percentage of expiring memberships successfully renewed.</p>
+          <section className="analytics-section" id="analytics">
+            <div className="card chart-card">
+              <div className="card-heading">
+                <div>
+                  <h3>Renewal Rate</h3>
+                  <p>Percentage of expiring memberships successfully renewed.</p>
                 </div>
-                <div className="chart-visual-wrapper">
-                  <div className="chart-donut-container">
-                    <svg width="180" height="180" viewBox="0 0 180 180" className="donut-svg">
-                      <circle cx="90" cy="90" r="75" fill="none" stroke="var(--bg-tertiary)" strokeWidth="10" />
-                      <circle
-                        cx="90"
-                        cy="90"
-                        r="75"
-                        fill="none"
-                        stroke="var(--text-primary)"
-                        strokeWidth="10"
-                        strokeDasharray={2 * Math.PI * 75}
-                        strokeDashoffset={2 * Math.PI * 75 * (1 - metrics.renewalRate / 100)}
-                        strokeLinecap="round"
-                      />
-                    </svg>
-                    <div className="donut-label-wrapper">
-                      <span className="donut-number">{metrics.renewalRate}%</span>
-                      <span className="donut-label">Target: 85%</span>
-                    </div>
+                <BarChart3 size={18} />
+              </div>
+              <div className="chart-visual-wrapper">
+                <div className="chart-donut-container">
+                  <svg width="180" height="180" viewBox="0 0 180 180" className="donut-svg">
+                    <circle cx="90" cy="90" r="75" fill="none" stroke="var(--bg-tertiary)" strokeWidth="10" />
+                    <circle
+                      cx="90"
+                      cy="90"
+                      r="75"
+                      fill="none"
+                      stroke="var(--text-primary)"
+                      strokeWidth="10"
+                      strokeDasharray={2 * Math.PI * 75}
+                      strokeDashoffset={2 * Math.PI * 75 * (1 - metrics.renewalRate / 100)}
+                      strokeLinecap="round"
+                    />
+                  </svg>
+                  <div className="donut-label-wrapper">
+                    <span>{metrics.renewalRate}%</span>
+                    <small>Target: 85%</small>
                   </div>
                 </div>
               </div>
+            </div>
 
-              <div className="card chart-card">
-                <div className="chart-title-container">
-                  <h3 className="chart-title">Members at Risk</h3>
-                  <p className="chart-desc">Expiries broken down by urgency level.</p>
+            <div className="card chart-card">
+              <div className="card-heading">
+                <div>
+                  <h3>Members at Risk</h3>
+                  <p>Expiries broken down by urgency level.</p>
                 </div>
-                <div className="risk-list">
-                  <RiskBar label="Expiring Tomorrow (Critical)" count={1} max={3} color="#EF4444" />
-                  <RiskBar label="Expiring in 5 Days (Pending)" count={1} max={3} color="#F59E0B" />
-                  <RiskBar label="Outreach Active / Reminder Sent" count={members.filter((m) => m.status === 'Reminder Sent').length} max={members.length} color="#2563EB" />
-                </div>
+                <Users size={18} />
               </div>
+              <RiskBar label="Expiring Tomorrow (Critical)" count={members.filter((m) => m.name === 'Sarah' && m.status !== 'Renewed').length} max={1} color="#EF4444" />
+              <RiskBar label="Expiring in 5 Days (Pending)" count={members.filter((m) => m.name === 'John' && m.status === 'Pending').length} max={1} color="#F59E0B" />
+              <RiskBar label="Outreach Active / Reminder Sent" count={members.filter((m) => m.status === 'Reminder Sent').length} max={members.length || 1} color="#2563EB" />
+            </div>
 
-              <div className="card chart-card revenue-card">
-                <div className="chart-title-container">
-                  <h3 className="chart-title">Revenue Saved Trend</h3>
-                  <p className="chart-desc">Cumulative value of membership renewals secured by automated notifications.</p>
+            <div className="card chart-card revenue-chart">
+              <div className="card-heading">
+                <div>
+                  <h3>Revenue Saved Trend</h3>
+                  <p>Cumulative value of membership renewals secured by automated notifications.</p>
                 </div>
-                <div className="chart-visual-wrapper">
-                  <svg width="100%" height="220" viewBox="0 0 600 220" preserveAspectRatio="none">
-                    <defs>
-                      <linearGradient id="gradient-area" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stopColor="var(--text-primary)" stopOpacity="0.08" />
-                        <stop offset="100%" stopColor="var(--text-primary)" stopOpacity="0" />
-                      </linearGradient>
-                    </defs>
-                    {[20, 70, 120, 170].map((y) => (
-                      <line key={y} x1="0" y1={y} x2="600" y2={y} stroke="var(--border-color)" strokeDasharray="4 4" />
-                    ))}
-                    <path d={`M 0 170 Q 150 140 300 120 T 450 70 T 600 ${metrics.revenueSaved === 2800 ? 50 : 25}`} fill="none" stroke="var(--text-primary)" strokeWidth="2.5" />
-                    <path d={`M 0 170 Q 150 140 300 120 T 450 70 T 600 ${metrics.revenueSaved === 2800 ? 50 : 25} L 600 210 L 0 210 Z`} fill="url(#gradient-area)" />
-                    <circle cx="600" cy={metrics.revenueSaved === 2800 ? 50 : 25} r="5" fill="var(--text-primary)" />
-                  </svg>
-                </div>
+                <DollarSign size={18} />
+              </div>
+              <div className="chart-visual-wrapper">
+                <svg width="100%" height="220" viewBox="0 0 600 220" preserveAspectRatio="none">
+                  <defs>
+                    <linearGradient id="gradient-area" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="var(--text-primary)" stopOpacity="0.08" />
+                      <stop offset="100%" stopColor="var(--text-primary)" stopOpacity="0" />
+                    </linearGradient>
+                  </defs>
+                  {[20, 70, 120, 170].map((y) => (
+                    <line key={y} x1="0" y1={y} x2="600" y2={y} stroke="var(--border-color)" strokeDasharray="4 4" />
+                  ))}
+                  <path d={`M 0 170 Q 150 140 300 120 T 450 70 T 600 ${metrics.revenueSaved === 2800 ? 50 : 25}`} fill="none" stroke="var(--text-primary)" strokeWidth="2.5" />
+                  <path d={`M 0 170 Q 150 140 300 120 T 450 70 T 600 ${metrics.revenueSaved === 2800 ? 50 : 25} L 600 210 L 0 210 Z`} fill="url(#gradient-area)" />
+                  <circle cx="600" cy={metrics.revenueSaved === 2800 ? 50 : 25} r="5" fill="var(--text-primary)" />
+                </svg>
               </div>
             </div>
-          </div>
-        )}
-      </main>
+          </section>
+        </div>
+      </section>
 
       {isRunning && (
         <div className="loading-overlay">
@@ -366,7 +419,7 @@ export default function App() {
             <div className="spinner" />
             <div>
               <h4 className="loading-title">Scanning Subscriptions</h4>
-              <p className="loading-subtitle">Checking Google Sheet records, verifying expiries, and dispatching WhatsApp reminders...</p>
+              <p className="loading-subtitle">Checking records, verifying expiries, and dispatching WhatsApp reminders...</p>
             </div>
           </div>
         </div>
@@ -375,81 +428,41 @@ export default function App() {
   );
 }
 
-function PageHeader({ title, subtitle }) {
+function MetricCard({ label, value, trend, icon, highlight = false, note }) {
   return (
-    <div className="page-header">
-      <div className="header-title-container">
-        <h1 className="page-title">{title}</h1>
-        <p className="page-subtitle">{subtitle}</p>
+    <div className={`card metric-card ${highlight ? 'highlight' : ''}`}>
+      <div className="metric-top">
+        <span>{label}</span>
+        <div className="metric-icon">{icon}</div>
       </div>
+      <div className="metric-value-row">
+        <strong>{value}</strong>
+        {trend && <span>{trend}</span>}
+      </div>
+      {note && <p>{note}</p>}
     </div>
   );
 }
 
-function StatCard({ label, value, trend, icon, note }) {
+function MiniStat({ label, value }) {
   return (
-    <div className="card stat-card">
-      <div className="stat-header">
-        <span className="stat-label">{label}</span>
-        {icon && <div className="stat-icon-wrapper">{icon}</div>}
-      </div>
-      <div className="stat-value-row">
-        <span className="stat-value">{value}</span>
-        {trend && <span className="stat-trend positive">{trend}</span>}
-      </div>
-      {note && <div className="stat-note">{note}</div>}
-    </div>
-  );
-}
-
-function MembersTable({ members, getStatusBadge, compact = false }) {
-  return (
-    <table className="premium-table">
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Expiry</th>
-          <th className={compact ? 'align-right' : ''}>Status</th>
-        </tr>
-      </thead>
-      <tbody>
-        {members.map((member) => (
-          <tr key={member.id}>
-            <td>
-              <div className="member-name">{member.name}</div>
-              {compact && <div className="member-phone">{member.phone}</div>}
-            </td>
-            <td>{member.expiry}</td>
-            <td className={compact ? 'align-right' : ''}>{getStatusBadge(member.status)}</td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
-  );
-}
-
-function Activity({ title, subtitle, badge, extra, success = false }) {
-  return (
-    <div className="activity-item">
-      <div className="activity-details">
-        <div className="activity-title">{title}</div>
-        <div className="activity-subtitle">{subtitle}</div>
-        {extra && <div className="activity-extra">{extra}</div>}
-      </div>
-      {badge && <span className={`badge ${success ? 'badge-renewed' : ''}`}>{badge}</span>}
+    <div className="mini-stat">
+      <span>{label}</span>
+      <strong>{value}</strong>
     </div>
   );
 }
 
 function RiskBar({ label, count, max, color }) {
+  const width = `${Math.min((count / max) * 100, 100)}%`;
   return (
-    <div>
+    <div className="risk-item">
       <div className="risk-row">
         <span>{label}</span>
         <strong>{count} member{count !== 1 ? 's' : ''}</strong>
       </div>
       <div className="risk-track">
-        <div className="risk-fill" style={{ width: `${(count / max) * 100}%`, backgroundColor: color }} />
+        <div className="risk-fill" style={{ width, backgroundColor: color }} />
       </div>
     </div>
   );
