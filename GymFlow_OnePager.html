@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GymFlow — Membership Renewal & Follow-up Automation</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #FFFFFF;
+      --bg-alt: #FAFAFA;
+      --text: #09090B;
+      --text-muted: #52525B;
+      --accent: #10B981;
+      --accent-light: #E6F4EA;
+      --border: #E4E4E7;
+      --radius: 12px;
+    }
+    
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background-color: var(--bg-alt);
+      color: var(--text);
+      line-height: 1.6;
+      padding: 2.5rem 1.5rem;
+    }
+    
+    .container {
+      max-width: 720px;
+      margin: 0 auto;
+      background-color: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 3rem;
+      box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.03);
+    }
+    
+    .header {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 2rem;
+    }
+    
+    .logo-icon {
+      background-color: var(--text);
+      color: var(--bg);
+      width: 36px;
+      height: 36px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 1.25rem;
+    }
+    
+    .logo-text {
+      font-size: 1.5rem;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+    }
+    
+    h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      letter-spacing: -0.04em;
+      line-height: 1.2;
+      margin-bottom: 0.75rem;
+    }
+    
+    .subtitle {
+      font-size: 1.1rem;
+      color: var(--text-muted);
+      margin-bottom: 2.5rem;
+    }
+    
+    h2 {
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin-top: 2rem;
+      margin-bottom: 1rem;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 0.5rem;
+    }
+    
+    p {
+      margin-bottom: 1.25rem;
+      color: var(--text-muted);
+      font-size: 0.95rem;
+    }
+    
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.25rem;
+      margin: 1.5rem 0;
+    }
+    
+    .card {
+      border: 1px solid var(--border);
+      background-color: var(--bg-alt);
+      border-radius: var(--radius);
+      padding: 1.25rem;
+    }
+    
+    .card-title {
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      margin-bottom: 0.5rem;
+    }
+    
+    .card-value {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+    
+    .workflow {
+      background-color: var(--bg-alt);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      margin: 1.5rem 0;
+    }
+    
+    .workflow-step {
+      display: flex;
+      align-items: flex-start;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+    
+    .workflow-step:last-child {
+      margin-bottom: 0;
+    }
+    
+    .step-number {
+      background-color: var(--text);
+      color: var(--bg);
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      font-weight: 700;
+      flex-shrink: 0;
+      margin-top: 0.125rem;
+    }
+    
+    .step-content strong {
+      display: block;
+      font-size: 0.95rem;
+      color: var(--text);
+      margin-bottom: 0.125rem;
+    }
+    
+    .step-content p {
+      margin: 0;
+      font-size: 0.85rem;
+    }
+    
+    .footer {
+      margin-top: 3rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+    
+    .cta {
+      display: inline-block;
+      background-color: var(--text);
+      color: var(--bg);
+      text-decoration: none;
+      padding: 0.75rem 1.5rem;
+      border-radius: 6px;
+      font-weight: 600;
+      transition: background-color 0.2s;
+    }
+    
+    .cta:hover {
+      opacity: 0.9;
+    }
+    
+    @media (max-width: 600px) {
+      .container {
+        padding: 1.5rem;
+      }
+      .grid {
+        grid-template-columns: 1fr;
+      }
+      .footer {
+        flex-direction: column;
+        gap: 1.5rem;
+        align-items: flex-start;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <div class="header">
+      <div class="logo-icon">⚡</div>
+      <div class="logo-text">GymFlow</div>
+    </div>
+    
+    <h1>Automate Gym Renewals & Follow-ups</h1>
+    <p class="subtitle">Stop losing members to manual follow-up schedules. GymFlow tracks expiring memberships, triggers reminders, and logs responses automatically.</p>
+    
+    <h2>Why GymFlow?</h2>
+    <p>Every month, gyms lose 5% to 15% of their members simply because subscription expiry follow-ups are manual, inconsistent, or forgotten. GymFlow automates this entire sequence, giving you back hours of administrative time and saving thousands in lost revenue.</p>
+    
+    <div class="grid">
+      <div class="card">
+        <div class="card-title">Renewal Rate</div>
+        <div class="card-value">Up to 84%</div>
+      </div>
+      <div class="card" style="border-color: var(--accent);">
+        <div class="card-title" style="color: var(--accent);">Revenue Saved</div>
+        <div class="card-value" style="color: var(--accent);">$2,800/mo</div>
+      </div>
+    </div>
+    
+    <h2>The 100% Automated Workflow</h2>
+    <div class="workflow">
+      <div class="workflow-step">
+        <div class="step-number">1</div>
+        <div class="step-content">
+          <strong>Daily Auto-Scan</strong>
+          <p>Every morning, GymFlow scans your spreadsheet directory for memberships expiring in 7 days.</p>
+        </div>
+      </div>
+      <div class="workflow-step">
+        <div class="step-number">2</div>
+        <div class="step-content">
+          <strong>Personalized Notification</strong>
+          <p>It automatically triggers a personalized notification via WhatsApp or Email to the member.</p>
+        </div>
+      </div>
+      <div class="workflow-step">
+        <div class="step-number">3</div>
+        <div class="step-content">
+          <strong>Instant Reply Processing</strong>
+          <p>If the member replies YES, GymFlow marks them as "Renewed". If they don't reply within 48 hours, a secondary follow-up is automatically dispatched.</p>
+        </div>
+      </div>
+    </div>
+    
+    <h2>Demo Insights</h2>
+    <p>A simple dashboard gives the gym owner real-time visibility into outreach stats, upcoming expiries, and saved revenue, without requiring complex setup, payments, or manual typing.</p>
+    
+    <div class="footer">
+      <div>
+        <strong>GymFlow Automation</strong><br>
+        demo@gymflow.io | +1 (555) 019-2834
+      </div>
+      <a href="#" class="cta">Start Free Demo</a>
+    </div>
+  </div>
+
+</body>
+</html>
