@@ -175,6 +175,7 @@ export default function App() {
               {isRunning ? 'Running...' : 'Test Automation'}
             </button>
           </div>
+          <p className="hero-trust">Free for your first 60 days. No credit card required.</p>
         </div>
       </section>
 
@@ -184,7 +185,7 @@ export default function App() {
             <div className="success-banner">
               <div className="success-banner-left">
                 <CheckCircle2 size={20} />
-                <span>Automation completed</span>
+                <span>Automation completed — 12 reminders sent</span>
               </div>
               <button className="close-banner-btn" onClick={() => setShowSuccessBanner(false)} aria-label="Close banner">
                 <X size={18} />
@@ -192,9 +193,9 @@ export default function App() {
             </div>
           )}
 
+          {/* PAGE 2 KICKER REMOVED */}
           <header className="dashboard-header">
             <div>
-              <p className="section-kicker">Page 2 - Light Dashboard</p>
               <h2>GymFlow Dashboard</h2>
               <p>Monitor membership renewals, outreach logs, and recovery analytics.</p>
             </div>
