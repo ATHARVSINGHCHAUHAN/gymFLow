@@ -1,16 +1,1213 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%E2%9A%A1%3C/text%3E%3C/svg%3E" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>GymFlow — Renewal & Follow-up Automation</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
-  </body>
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>GymFlow — WhatsApp Membership Automation for Indian Gyms</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+/* ─── TOKENS ─────────────────────────────────────────── */
+:root {
+  --black:        #0a0a0a;
+  --surface:      #111111;
+  --card:         #161616;
+  --card-hover:   #1c1c1c;
+  --border:       #242424;
+  --border-light: #2e2e2e;
+  --green:        #25d366;
+  --green-dim:    #1a9e4d;
+  --green-muted:  #0d2318;
+  --green-ring:   #1f5c38;
+  --accent:       #b8ff5a;
+  --white:        #f0efeb;
+  --muted:        #7a7a7a;
+  --faint:        #3a3a3a;
+  --red:          #ef4444;
+  --amber:        #f59e0b;
+  --blue:         #3b82f6;
+  --text-primary: var(--white);
+  --bg-tertiary:  #2a2a2a;
+  --border-color: #242424;
+  --radius:       12px;
+  --radius-lg:    18px;
+}
+
+/* ─── RESET ──────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--black);
+  color: var(--white);
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 15px;
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+a { text-decoration: none; color: inherit; }
+button { font-family: inherit; cursor: pointer; }
+input { font-family: inherit; }
+
+/* ─── SCROLLBAR ──────────────────────────────────────── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--black); }
+::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
+
+/* ════════════════════════════════════════════════════════
+   LANDING PAGE
+════════════════════════════════════════════════════════ */
+
+/* NAV */
+.lp-nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 16px 48px;
+  background: rgba(10,10,10,0.88);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+}
+.lp-logo {
+  display: flex; align-items: center; gap: 10px;
+  font-weight: 800; font-size: 19px; letter-spacing: -0.4px;
+}
+.lp-logo-dot {
+  width: 30px; height: 30px; background: var(--green);
+  border-radius: 8px; display: flex; align-items: center; justify-content: center;
+  font-size: 15px; flex-shrink: 0;
+}
+.lp-nav-links { display: flex; gap: 28px; list-style: none; }
+.lp-nav-links a {
+  color: var(--muted); font-size: 14px; transition: color .2s;
+}
+.lp-nav-links a:hover { color: var(--white); }
+.lp-nav-cta {
+  background: var(--green); color: #000;
+  padding: 9px 20px; border-radius: 8px;
+  font-weight: 600; font-size: 13px; border: none;
+  transition: background .2s, transform .15s;
+}
+.lp-nav-cta:hover { background: var(--accent); transform: translateY(-1px); }
+
+/* HERO */
+.lp-hero {
+  min-height: 100vh;
+  display: flex; flex-direction: column; justify-content: center;
+  padding: 140px 48px 100px;
+  position: relative; overflow: hidden;
+}
+.lp-hero-bg {
+  position: absolute; inset: 0; z-index: 0;
+  background:
+    radial-gradient(ellipse 65% 55% at 75% 50%, #0b2817 0%, transparent 65%),
+    radial-gradient(ellipse 40% 40% at 15% 75%, #091d12 0%, transparent 55%);
+}
+.lp-hero-grid {
+  position: absolute; inset: 0; z-index: 0; opacity: 0.03;
+  background-image:
+    linear-gradient(var(--white) 1px, transparent 1px),
+    linear-gradient(90deg, var(--white) 1px, transparent 1px);
+  background-size: 56px 56px;
+}
+.lp-hero-content { position: relative; z-index: 1; max-width: 700px; }
+.lp-badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: var(--green-muted); border: 1px solid var(--green-ring);
+  color: var(--green); padding: 5px 14px; border-radius: 999px;
+  font-size: 11px; font-weight: 600; letter-spacing: .8px; text-transform: uppercase;
+  margin-bottom: 28px;
+  animation: fadeUp .5s ease both;
+}
+.lp-h1 {
+  font-size: clamp(44px, 6.5vw, 82px);
+  font-weight: 800; line-height: 1.01; letter-spacing: -2px;
+  margin-bottom: 22px;
+  animation: fadeUp .5s .08s ease both;
+}
+.lp-h1 .hl { color: var(--green); }
+.lp-sub {
+  font-size: 17px; color: #999; max-width: 500px;
+  line-height: 1.75; margin-bottom: 38px; font-weight: 400;
+  animation: fadeUp .5s .16s ease both;
+}
+.lp-actions {
+  display: flex; gap: 14px; align-items: center;
+  animation: fadeUp .5s .22s ease both;
+}
+.btn-lp-primary {
+  background: var(--green); color: #000;
+  padding: 13px 26px; border-radius: 10px;
+  font-weight: 700; font-size: 14px; border: none;
+  display: flex; align-items: center; gap: 8px;
+  transition: all .2s;
+}
+.btn-lp-primary:hover { background: var(--accent); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(37,211,102,.25); }
+.btn-lp-secondary {
+  background: transparent; color: var(--white);
+  padding: 13px 26px; border-radius: 10px;
+  font-weight: 500; font-size: 14px;
+  border: 1px solid var(--border); transition: all .2s;
+}
+.btn-lp-secondary:hover { border-color: #444; background: #1a1a1a; }
+.lp-stats {
+  display: flex; gap: 44px; margin-top: 60px;
+  padding-top: 36px; border-top: 1px solid var(--border);
+  animation: fadeUp .5s .3s ease both;
+}
+.stat-num { font-size: 34px; font-weight: 800; letter-spacing: -1px; }
+.stat-lbl { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+/* TRUST BAR */
+.lp-trust {
+  padding: 20px 48px;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 28px; flex-wrap: wrap;
+}
+.trust-lbl { font-size: 11px; color: #555; text-transform: uppercase; letter-spacing: 1px; white-space: nowrap; }
+.trust-pills { display: flex; gap: 10px; flex-wrap: wrap; }
+.trust-pills span {
+  font-size: 12px; color: #555;
+  padding: 5px 12px; border: 1px solid #222; border-radius: 999px;
+}
+
+/* SECTION COMMON */
+.lp-section { padding: 90px 48px; }
+.sec-label {
+  font-size: 11px; letter-spacing: 2px; text-transform: uppercase;
+  color: var(--green); margin-bottom: 14px; font-weight: 600;
+}
+.sec-h2 {
+  font-size: clamp(28px, 3.5vw, 46px);
+  font-weight: 800; letter-spacing: -1.2px;
+  line-height: 1.1; margin-bottom: 14px;
+}
+.sec-sub { font-size: 16px; color: #888; max-width: 460px; margin-bottom: 56px; }
+
+/* HOW IT WORKS */
+.steps-row {
+  display: grid; grid-template-columns: repeat(3,1fr); gap: 2px;
+}
+.step {
+  background: var(--card); padding: 44px 32px;
+  border: 1px solid var(--border); position: relative; overflow: hidden;
+  transition: border-color .2s;
+}
+.step:hover { border-color: var(--border-light); }
+.step:first-child { border-radius: var(--radius-lg) 0 0 var(--radius-lg); }
+.step:last-child  { border-radius: 0 var(--radius-lg) var(--radius-lg) 0; }
+.step-bg-num {
+  font-size: 90px; font-weight: 800; color: #1a1a1a;
+  position: absolute; top: 8px; right: 18px; line-height: 1; user-select: none;
+}
+.step-icon {
+  width: 44px; height: 44px; background: var(--green-muted);
+  border-radius: 10px; display: flex; align-items: center; justify-content: center;
+  font-size: 20px; margin-bottom: 22px;
+}
+.step h3 { font-size: 18px; font-weight: 700; margin-bottom: 10px; letter-spacing: -.3px; }
+.step p  { font-size: 13px; color: #888; line-height: 1.7; }
+
+/* WHATSAPP PREVIEW FEATURE */
+.feat-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 20px; }
+.feat-card {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: var(--radius-lg); padding: 32px;
+  transition: border-color .2s, transform .2s;
+}
+.feat-card:hover { border-color: var(--border-light); transform: translateY(-2px); }
+.feat-card.wide {
+  grid-column: span 2;
+  display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: center;
+  background: var(--green-muted); border-color: var(--green-ring);
+}
+.feat-icon {
+  width: 42px; height: 42px; background: #1a1a1a;
+  border-radius: 10px; display: flex; align-items: center;
+  justify-content: center; font-size: 19px; margin-bottom: 18px;
+}
+.feat-card.wide .feat-icon { background: rgba(0,0,0,.3); }
+.feat-card h3 { font-size: 17px; font-weight: 700; margin-bottom: 8px; letter-spacing: -.3px; }
+.feat-card p  { font-size: 13px; color: #888; line-height: 1.7; }
+.feat-card.wide p { color: #9ecfb4; }
+
+/* WA preview */
+.wa-mock {
+  background: #071610; border-radius: 14px; padding: 18px;
+  border: 1px solid #122b1d;
+}
+.wa-head {
+  display: flex; align-items: center; gap: 10px;
+  padding-bottom: 12px; border-bottom: 1px solid #122b1d; margin-bottom: 14px;
+}
+.wa-av {
+  width: 34px; height: 34px; background: var(--green);
+  border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  font-size: 15px; flex-shrink: 0;
+}
+.wa-name { font-size: 13px; font-weight: 600; }
+.wa-online { font-size: 11px; color: var(--green); }
+.wa-bubble {
+  background: #122b1d; border-radius: 0 10px 10px 10px;
+  padding: 10px 14px; font-size: 12px; line-height: 1.65;
+  color: #b4d8c3; max-width: 88%; margin-bottom: 7px;
+}
+.wa-bubble-reply {
+  background: #0c2016; border-radius: 10px 0 10px 10px;
+  padding: 10px 14px; font-size: 12px; color: #b4d8c3;
+  margin-left: auto; max-width: 50%; margin-bottom: 7px;
+}
+.wa-time { font-size: 10px; color: #444; text-align: right; margin-top: 4px; }
+
+/* PRICING */
+.pricing-wrap {
+  display: grid; grid-template-columns: repeat(3,1fr); gap: 2px;
+  border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden;
+}
+.price-card { background: var(--card); padding: 44px 32px; position: relative; }
+.price-card.pop { background: #0c1c11; border-left: 1px solid var(--green-ring); border-right: 1px solid var(--green-ring); }
+.pop-badge {
+  position: absolute; top: 18px; right: 18px;
+  background: var(--green); color: #000;
+  font-size: 10px; font-weight: 700; padding: 3px 9px;
+  border-radius: 999px; text-transform: uppercase; letter-spacing: .5px;
+}
+.price-tier { font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--muted); margin-bottom: 10px; font-weight: 600; }
+.price-amt {
+  font-size: 48px; font-weight: 800; letter-spacing: -2px;
+  line-height: 1; margin-bottom: 4px;
+}
+.price-amt span { font-size: 16px; font-weight: 400; color: var(--muted); letter-spacing: 0; }
+.price-desc { font-size: 12px; color: #555; margin-bottom: 28px; }
+.price-feats { list-style: none; margin-bottom: 32px; }
+.price-feats li {
+  font-size: 13px; color: #aaa; padding: 7px 0;
+  border-bottom: 1px solid #1a1a1a;
+  display: flex; align-items: center; gap: 9px;
+}
+.price-feats li::before { content: '✓'; color: var(--green); font-weight: 700; flex-shrink: 0; }
+.price-btn {
+  width: 100%; padding: 13px; border-radius: 9px;
+  font-weight: 600; font-size: 13px; border: none; cursor: pointer;
+  transition: all .2s;
+}
+.price-btn.outline {
+  background: transparent; color: var(--white); border: 1px solid var(--border);
+}
+.price-btn.outline:hover { border-color: #444; background: #1a1a1a; }
+.price-btn.solid { background: var(--green); color: #000; }
+.price-btn.solid:hover { background: var(--accent); }
+.price-note { text-align: center; color: #444; font-size: 12px; margin-top: 18px; }
+
+/* TESTIMONIALS */
+.testi-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; }
+.testi-card {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: var(--radius-lg); padding: 26px;
+  transition: border-color .2s;
+}
+.testi-card:hover { border-color: var(--border-light); }
+.stars { color: var(--green); font-size: 12px; margin-bottom: 14px; letter-spacing: 2px; }
+.testi-card blockquote {
+  font-size: 13px; color: #aaa; line-height: 1.75;
+  font-style: italic; margin-bottom: 18px;
+}
+.testi-author { display: flex; align-items: center; gap: 10px; }
+.testi-av {
+  width: 34px; height: 34px; border-radius: 50%; background: var(--green-muted);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 700; color: var(--green); flex-shrink: 0;
+}
+.testi-name { font-size: 13px; font-weight: 600; }
+.testi-gym  { font-size: 11px; color: var(--muted); }
+
+/* FAQ */
+.faq-list { max-width: 700px; }
+.faq-item { border-bottom: 1px solid var(--border); padding: 22px 0; cursor: pointer; }
+.faq-q {
+  font-size: 16px; font-weight: 600;
+  display: flex; justify-content: space-between; align-items: center;
+  letter-spacing: -.2px;
+}
+.faq-icon { font-size: 20px; color: var(--muted); transition: transform .2s; }
+.faq-item.open .faq-icon { transform: rotate(45deg); color: var(--green); }
+.faq-a {
+  font-size: 13px; color: #888; line-height: 1.75;
+  max-height: 0; overflow: hidden; transition: max-height .3s ease, padding .2s;
+}
+.faq-item.open .faq-a { max-height: 200px; padding-top: 12px; }
+
+/* BOTTOM CTA */
+.lp-cta-strip {
+  margin: 0 48px 80px;
+  background: linear-gradient(135deg, #0c1e12 0%, #162d1e 100%);
+  border: 1px solid var(--green-ring);
+  border-radius: 22px; padding: 72px 56px;
+  display: flex; align-items: center; justify-content: space-between; gap: 40px;
+}
+.lp-cta-strip h2 { font-size: clamp(24px,3vw,40px); font-weight: 800; letter-spacing: -1px; margin-bottom: 8px; }
+.lp-cta-strip p { color: #9ecfb4; font-size: 15px; }
+.cta-btns { display: flex; gap: 14px; align-items: center; flex-shrink: 0; }
+
+/* FOOTER */
+.lp-footer {
+  border-top: 1px solid var(--border);
+  padding: 44px 48px;
+  display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 44px;
+}
+.footer-brand-desc { font-size: 12px; color: #555; line-height: 1.75; max-width: 240px; margin-top: 14px; }
+.footer-built { margin-top: 18px; font-size: 11px; color: #444; }
+.footer-built a { color: #666; }
+.footer-built a:hover { color: var(--green); }
+.footer-col h4 {
+  font-size: 11px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 1px; margin-bottom: 14px; color: #555;
+}
+.footer-col ul { list-style: none; }
+.footer-col ul li { margin-bottom: 9px; }
+.footer-col ul li a { font-size: 12px; color: #555; transition: color .2s; }
+.footer-col ul li a:hover { color: var(--white); }
+.lp-footer-bottom {
+  border-top: 1px solid var(--border);
+  padding: 18px 48px;
+  display: flex; justify-content: space-between; align-items: center;
+}
+.lp-footer-bottom p { font-size: 11px; color: #444; }
+
+/* WA FLOAT */
+.wa-float {
+  position: fixed; bottom: 26px; right: 26px; z-index: 999;
+  width: 50px; height: 50px; background: var(--green);
+  border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  font-size: 22px; box-shadow: 0 4px 18px rgba(37,211,102,.35);
+  cursor: pointer; transition: transform .2s;
+  text-decoration: none;
+}
+.wa-float:hover { transform: scale(1.1); }
+
+/* ════════════════════════════════════════════════════════
+   DASHBOARD (ported from React original)
+════════════════════════════════════════════════════════ */
+.dash-page {
+  background: var(--black);
+  padding: 0;
+  border-top: 1px solid var(--border);
+}
+.dash-wrap {
+  max-width: 1140px; margin: 0 auto;
+  padding: 48px 32px 80px;
+}
+
+/* Success banner */
+.success-banner {
+  display: flex; align-items: center; justify-content: space-between;
+  background: #0b2416; border: 1px solid var(--green-ring);
+  border-radius: 10px; padding: 14px 20px; margin-bottom: 28px;
+  gap: 12px;
+}
+.success-banner-left { display: flex; align-items: center; gap: 10px; font-size: 14px; color: var(--green); }
+.close-banner { background: none; border: none; color: var(--muted); font-size: 18px; line-height: 1; padding: 0 4px; }
+.close-banner:hover { color: var(--white); }
+
+/* Dashboard header */
+.dash-header {
+  display: flex; align-items: flex-start; justify-content: space-between;
+  margin-bottom: 32px; gap: 16px; flex-wrap: wrap;
+}
+.dash-header h2 { font-size: 22px; font-weight: 700; letter-spacing: -.5px; margin-bottom: 4px; }
+.dash-header p  { font-size: 13px; color: var(--muted); }
+
+/* Buttons */
+.btn {
+  display: inline-flex; align-items: center; gap: 7px;
+  padding: 10px 20px; border-radius: 9px;
+  font-size: 13px; font-weight: 600; border: none;
+  transition: all .18s; cursor: pointer;
+}
+.btn-primary { background: var(--green); color: #000; }
+.btn-primary:hover { background: var(--accent); }
+.btn-primary:disabled { opacity: .55; cursor: not-allowed; }
+
+/* Metrics grid */
+.metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(5,1fr); gap: 12px;
+  margin-bottom: 28px;
+}
+.metric-card {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 18px 16px;
+}
+.metric-card.highlight {
+  background: var(--green-muted); border-color: var(--green-ring);
+}
+.metric-top {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 12px;
+}
+.metric-top span { font-size: 11px; color: var(--muted); font-weight: 500; text-transform: uppercase; letter-spacing: .5px; }
+.metric-icon {
+  width: 30px; height: 30px; background: var(--bg-tertiary);
+  border-radius: 7px; display: flex; align-items: center; justify-content: center;
+  color: var(--muted);
+}
+.metric-card.highlight .metric-icon { background: rgba(0,0,0,.3); color: var(--green); }
+.metric-val-row { display: flex; align-items: baseline; gap: 8px; }
+.metric-val { font-size: 24px; font-weight: 700; letter-spacing: -.5px; }
+.metric-trend { font-size: 11px; color: var(--green); font-weight: 600; }
+.metric-note { font-size: 11px; color: var(--muted); margin-top: 6px; }
+
+/* Dashboard grid */
+.dash-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 16px;
+  margin-bottom: 20px;
+}
+
+/* Cards */
+.card {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: var(--radius-lg); padding: 24px;
+}
+.card-heading {
+  display: flex; align-items: flex-start; justify-content: space-between;
+  margin-bottom: 20px; gap: 12px;
+}
+.card-heading h3 { font-size: 15px; font-weight: 700; margin-bottom: 3px; letter-spacing: -.2px; }
+.card-heading p  { font-size: 12px; color: var(--muted); }
+.card-heading svg { color: var(--muted); flex-shrink: 0; }
+
+/* Form card */
+.member-form { display: flex; flex-direction: column; gap: 14px; }
+.member-form label { display: flex; flex-direction: column; gap: 6px; font-size: 12px; color: var(--muted); font-weight: 500; }
+.member-form input {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 8px; padding: 10px 14px; color: var(--white);
+  font-size: 13px; outline: none; transition: border-color .18s;
+}
+.member-form input:focus { border-color: var(--green-dim); }
+.member-form input::placeholder { color: #555; }
+
+/* Action card */
+.action-card {
+  display: flex; flex-direction: column; justify-content: space-between; gap: 20px;
+}
+.action-card h3 { font-size: 15px; font-weight: 700; margin-bottom: 10px; }
+.action-card p  { font-size: 13px; color: var(--muted); line-height: 1.65; margin-bottom: 14px; }
+.wa-line {
+  display: inline-flex; align-items: center; gap: 7px;
+  font-size: 12px; color: var(--green); font-weight: 500;
+}
+
+/* Table */
+.table-card { margin-bottom: 20px; }
+.table-wrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; }
+thead th {
+  text-align: left; font-size: 11px; font-weight: 600;
+  color: var(--muted); text-transform: uppercase; letter-spacing: .5px;
+  padding: 0 14px 10px; border-bottom: 1px solid var(--border);
+}
+tbody tr { transition: background .15s; }
+tbody tr:hover { background: var(--card-hover); }
+tbody td {
+  padding: 13px 14px; font-size: 13px;
+  border-bottom: 1px solid var(--border);
+}
+tbody tr:last-child td { border-bottom: none; }
+.member-name { font-weight: 600; }
+
+/* Badges */
+.badge {
+  display: inline-flex; align-items: center;
+  padding: 3px 10px; border-radius: 999px; font-size: 11px; font-weight: 600;
+}
+.badge-pending  { background: rgba(245,158,11,.15); color: #f59e0b; }
+.badge-sent     { background: rgba(59,130,246,.15);  color: #60a5fa; }
+.badge-renewed  { background: rgba(37,211,102,.15);  color: var(--green); }
+
+/* Logs */
+.log-summary-grid {
+  display: grid; grid-template-columns: repeat(3,1fr); gap: 10px;
+  margin-bottom: 20px;
+}
+.mini-stat {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 9px; padding: 12px 14px;
+  display: flex; flex-direction: column; gap: 4px;
+}
+.mini-stat span { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .4px; }
+.mini-stat strong { font-size: 18px; font-weight: 700; }
+.logs-list { display: flex; flex-direction: column; gap: 14px; }
+.log-item { display: flex; gap: 14px; align-items: flex-start; }
+.log-icon-con {
+  width: 34px; height: 34px; border-radius: 9px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center; font-size: 14px;
+}
+.log-icon-con.success { background: rgba(37,211,102,.12); color: var(--green); }
+.log-content { flex: 1; }
+.log-header-row {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 3px; gap: 8px;
+}
+.log-header-row h4 { font-size: 13px; font-weight: 600; }
+.log-header-row span { font-size: 11px; color: var(--muted); white-space: nowrap; }
+.log-content p { font-size: 12px; color: var(--muted); line-height: 1.6; }
+
+/* Analytics */
+.analytics-grid {
+  display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px;
+  margin-top: 20px;
+}
+.chart-card { overflow: hidden; }
+.chart-visual { display: flex; justify-content: center; align-items: center; padding: 16px 0; }
+.donut-wrap { position: relative; width: 180px; height: 180px; }
+.donut-wrap svg { width: 180px; height: 180px; }
+.donut-label {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+}
+.donut-label span { font-size: 28px; font-weight: 800; letter-spacing: -1px; }
+.donut-label small { font-size: 11px; color: var(--muted); }
+.risk-item { margin-bottom: 14px; }
+.risk-row { display: flex; justify-content: space-between; margin-bottom: 7px; font-size: 12px; }
+.risk-row strong { font-weight: 600; }
+.risk-track { height: 5px; background: var(--bg-tertiary); border-radius: 999px; overflow: hidden; }
+.risk-fill  { height: 100%; border-radius: 999px; transition: width .4s ease; }
+.revenue-chart { grid-column: span 3; }
+
+/* Loading overlay */
+.loading-overlay {
+  position: fixed; inset: 0; z-index: 9999;
+  background: rgba(0,0,0,.7); backdrop-filter: blur(6px);
+  display: flex; align-items: center; justify-content: center;
+}
+.loading-card {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: var(--radius-lg); padding: 32px 36px;
+  display: flex; align-items: center; gap: 20px; max-width: 380px;
+}
+.spinner {
+  width: 34px; height: 34px; border-radius: 50%;
+  border: 3px solid var(--border);
+  border-top-color: var(--green);
+  animation: spin .7s linear infinite; flex-shrink: 0;
+}
+.loading-title { font-size: 15px; font-weight: 700; margin-bottom: 5px; }
+.loading-sub   { font-size: 12px; color: var(--muted); line-height: 1.6; }
+
+/* Toast */
+.toast {
+  position: fixed; bottom: 88px; right: 26px; z-index: 9999;
+  background: var(--card); border: 1px solid var(--green-ring);
+  border-radius: 10px; padding: 12px 16px;
+  display: flex; align-items: center; gap: 10px;
+  font-size: 13px; font-weight: 500;
+  transform: translateY(12px); opacity: 0;
+  transition: all .3s; pointer-events: none;
+  box-shadow: 0 8px 24px rgba(0,0,0,.4);
+}
+.toast.visible { transform: translateY(0); opacity: 1; pointer-events: all; }
+.toast-icon { color: var(--green); display: flex; }
+.toast-close { background: none; border: none; color: var(--muted); margin-left: 6px; display: flex; }
+.toast-close:hover { color: var(--white); }
+
+/* ANIMATIONS */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(18px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.fade-up { opacity: 0; transform: translateY(20px); transition: opacity .55s ease, transform .55s ease; }
+.fade-up.visible { opacity: 1; transform: translateY(0); }
+
+/* RESPONSIVE */
+@media (max-width: 900px) {
+  .lp-nav { padding: 14px 20px; }
+  .lp-nav-links { display: none; }
+  .lp-hero, .lp-section { padding-left: 20px; padding-right: 20px; }
+  .lp-h1 { font-size: 38px; letter-spacing: -1px; }
+  .lp-stats { gap: 24px; flex-wrap: wrap; }
+  .steps-row, .feat-grid, .pricing-wrap, .testi-grid { grid-template-columns: 1fr; }
+  .feat-card.wide { grid-column: span 1; grid-template-columns: 1fr; }
+  .step:first-child, .step:last-child { border-radius: var(--radius-lg); }
+  .lp-cta-strip { flex-direction: column; margin: 0 20px 56px; padding: 44px 28px; }
+  .lp-footer { grid-template-columns: 1fr; gap: 28px; padding: 32px 20px; }
+  .lp-footer-bottom { flex-direction: column; gap: 6px; padding: 16px 20px; }
+  .lp-trust { padding: 16px 20px; }
+  .metrics-grid { grid-template-columns: repeat(2,1fr); }
+  .dash-grid, .analytics-grid { grid-template-columns: 1fr; }
+  .revenue-chart { grid-column: span 1; }
+  .dash-wrap { padding: 32px 16px 60px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════
+     LANDING PAGE
+═══════════════════════════════════════════════════ -->
+
+<!-- NAV -->
+<nav class="lp-nav">
+  <div class="lp-logo">
+    <div class="lp-logo-dot">💪</div>
+    GymFlow
+  </div>
+  <ul class="lp-nav-links">
+    <li><a href="#pricing">Pricing</a></li>
+    <li><a href="#reviews">Reviews</a></li>
+    <li><a href="#dashboard">Dashboard</a></li>
+  </ul>
+  <button class="lp-nav-cta" onclick="document.getElementById('dashboard').scrollIntoView({behavior:'smooth'})">Open Dashboard →</button>
+</nav>
+
+<!-- HERO -->
+<section class="lp-hero" id="home">
+  <div class="lp-hero-bg"></div>
+  <div class="lp-hero-grid"></div>
+  <div class="lp-hero-content">
+    <div class="lp-badge">💬 WhatsApp-First · Made for India</div>
+    <h1 class="lp-h1">Renewals on<br/><span class="hl">autopilot.</span><br/>Revenue saved.</h1>
+    <p class="lp-sub">Members expire hone se pehle automatic WhatsApp reminder jaata hai. Wo reply karte hain, renew karte hain. Aapko kuch nahi karna.</p>
+    <div class="lp-actions">
+      <button class="btn-lp-primary" onclick="document.getElementById('pricing').scrollIntoView({behavior:'smooth'})">🚀 Start Free — 30 Days</button>
+      <button class="btn-lp-secondary" onclick="document.getElementById('dashboard').scrollIntoView({behavior:'smooth'})">Dashboard dekho</button>
+    </div>
+    <div class="lp-stats">
+      <div><div class="stat-num">₹2.4L+</div><div class="stat-lbl">Revenue recovered</div></div>
+      <div><div class="stat-num">85%</div><div class="stat-lbl">Renewal rate avg.</div></div>
+      <div><div class="stat-num">10 min</div><div class="stat-lbl">Setup time</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW — 3 inline steps, compact -->
+<div style="display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid var(--border);border-bottom:1px solid var(--border)" class="fade-up">
+  <div style="padding:28px 32px;border-right:1px solid var(--border);display:flex;gap:14px;align-items:flex-start">
+    <span style="font-size:22px;flex-shrink:0">📋</span>
+    <div><p style="font-size:13px;font-weight:700;margin-bottom:4px">Members add karo</p><p style="font-size:12px;color:var(--muted)">Naam, number, expiry date — 2 minute mein done.</p></div>
+  </div>
+  <div style="padding:28px 32px;border-right:1px solid var(--border);display:flex;gap:14px;align-items:flex-start">
+    <span style="font-size:22px;flex-shrink:0">⚙️</span>
+    <div><p style="font-size:13px;font-weight:700;margin-bottom:4px">GymFlow watch karta hai</p><p style="font-size:12px;color:var(--muted)">Roz subah 9 baje automatically scan hota hai.</p></div>
+  </div>
+  <div style="padding:28px 32px;display:flex;gap:14px;align-items:flex-start">
+    <span style="font-size:22px;flex-shrink:0">💬</span>
+    <div><p style="font-size:13px;font-weight:700;margin-bottom:4px">WhatsApp karta hai baki kaam</p><p style="font-size:12px;color:var(--muted)">Members YES reply karte hain, renewal done.</p></div>
+  </div>
+</div>
+
+<!-- PRICING -->
+<section class="lp-section" id="pricing">
+  <div class="sec-label">Pricing</div>
+  <h2 class="sec-h2">Simple pricing.<br/>Pays for itself.</h2>
+  <p class="sec-sub">Ek recovered member GymFlow ke 3 mahine ka cost pay kar deta hai.</p>
+  <div class="pricing-wrap fade-up">
+    <div class="price-card">
+      <div class="price-tier">Starter</div>
+      <div class="price-amt">₹599<span>/mo</span></div>
+      <div class="price-desc">100 tak members wale gyms ke liye</div>
+      <ul class="price-feats">
+        <li>100 tak members</li>
+        <li>WhatsApp reminders</li>
+        <li>Basic dashboard</li>
+        <li>Automation logs</li>
+        <li>Email support</li>
+      </ul>
+      <button class="price-btn outline" onclick="document.getElementById('dashboard').scrollIntoView({behavior:'smooth'})">Free mein shuru karo</button>
+    </div>
+    <div class="price-card pop">
+      <div class="pop-badge">Most Popular</div>
+      <div class="price-tier">Growth</div>
+      <div class="price-amt">₹999<span>/mo</span></div>
+      <div class="price-desc">Retention ke liye serious gyms ke liye</div>
+      <ul class="price-feats">
+        <li>500 tak members</li>
+        <li>WhatsApp automation</li>
+        <li>Razorpay / UPI integration</li>
+        <li>Multi-step follow-ups</li>
+        <li>Revenue analytics</li>
+        <li>Priority WhatsApp support</li>
+      </ul>
+      <button class="price-btn solid" onclick="document.getElementById('dashboard').scrollIntoView({behavior:'smooth'})">30-Day Free Trial shuru karo</button>
+    </div>
+    <div class="price-card">
+      <div class="price-tier">Pro</div>
+      <div class="price-amt">₹1,999<span>/mo</span></div>
+      <div class="price-desc">Multi-branch gym chains ke liye</div>
+      <ul class="price-feats">
+        <li>Unlimited members</li>
+        <li>Multi-branch dashboard</li>
+        <li>Custom WhatsApp templates</li>
+        <li>Staff accounts</li>
+        <li>GST invoicing</li>
+        <li>Dedicated support</li>
+      </ul>
+      <button class="price-btn outline">Hum se contact karo</button>
+    </div>
+  </div>
+  <p class="price-note">Sab plans mein 30-day free trial · No credit card required · Kabhi bhi cancel karo</p>
+</section>
+
+<!-- TESTIMONIALS -->
+<section class="lp-section" id="reviews" style="padding-top:0">
+  <div class="sec-label">Reviews</div>
+  <h2 class="sec-h2">Gym owners love it.</h2>
+  <p class="sec-sub">Real results, real gyms across India.</p>
+  <div class="testi-grid fade-up">
+    <div class="testi-card">
+      <div class="stars">★★★★★</div>
+      <blockquote>"Pehle har mahine 15-20 members expire ho jaate the bina renewal ke. GymFlow lagaya, pehle hi mahine ₹18,000 recover kiye. Ab seedha WhatsApp pe reminder aa jaata hai."</blockquote>
+      <div class="testi-author">
+        <div class="testi-av">RK</div>
+        <div>
+          <div class="testi-name">Rajesh Kumar</div>
+          <div class="testi-gym">FitZone Gym, Pune</div>
+        </div>
+      </div>
+    </div>
+    <div class="testi-card">
+      <div class="stars">★★★★★</div>
+      <blockquote>"Setup literally 10 minute mein ho gaya. Ab daily 9 baje automatically messages chale jaate hain. Mujhe kuch nahi karna. Renewal rate 60% se 82% ho gayi."</blockquote>
+      <div class="testi-author">
+        <div class="testi-av">AP</div>
+        <div>
+          <div class="testi-name">Amit Patil</div>
+          <div class="testi-gym">Iron Body Fitness, Mumbai</div>
+        </div>
+      </div>
+    </div>
+    <div class="testi-card">
+      <div class="stars">★★★★★</div>
+      <blockquote>"Members ko WhatsApp pe message aata hai toh wo turant respond karte hain. Email toh koi padhta hi nahi tha. GymFlow ne sach mein fark daal diya."</blockquote>
+      <div class="testi-author">
+        <div class="testi-av">SP</div>
+        <div>
+          <div class="testi-name">Sunita Patel</div>
+          <div class="testi-gym">ActiveFit Studio, Bangalore</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     DASHBOARD
+═══════════════════════════════════════════════════ -->
+<div class="dash-page" id="dashboard">
+  <div class="dash-wrap">
+
+    <div id="success-banner" style="display:none" class="success-banner">
+      <div class="success-banner-left">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        <span>Automation completed — 12 reminders sent</span>
+      </div>
+      <button class="close-banner" onclick="document.getElementById('success-banner').style.display='none'">✕</button>
+    </div>
+
+    <header class="dash-header">
+      <div>
+        <h2>GymFlow Dashboard</h2>
+        <p>Monitor membership renewals, outreach logs, and recovery analytics.</p>
+      </div>
+      <button class="btn btn-primary" id="run-btn" onclick="runAutomation()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        Run Automation
+      </button>
+    </header>
+
+    <!-- METRICS -->
+    <div class="metrics-grid" id="metrics-grid">
+      <!-- Injected by JS -->
+    </div>
+
+    <!-- FORM + ACTION CARDS -->
+    <div class="dash-grid">
+      <div class="card" id="members">
+        <div class="card-heading">
+          <div>
+            <h3>Add Member</h3>
+            <p>Add a new member to renewal tracking.</p>
+          </div>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        </div>
+        <div class="member-form">
+          <label>Member name
+            <input id="inp-name" placeholder="Priya Sharma"/>
+          </label>
+          <label>Expiry date
+            <input id="inp-expiry" placeholder="June 12"/>
+          </label>
+          <label>WhatsApp number
+            <input id="inp-phone" placeholder="+91 98765 43210"/>
+          </label>
+          <button class="btn btn-primary" onclick="addMember()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Add Member
+          </button>
+        </div>
+      </div>
+
+      <div class="card action-card">
+        <div>
+          <h3>Automatic Renewal Follow-ups are Active</h3>
+          <p>GymFlow scans your membership sheet daily, triggers WhatsApp reminders 7 days prior to expiry, and processes replies.</p>
+          <span class="wa-line">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            WhatsApp renewal reminders sent automatically
+          </span>
+        </div>
+        <button class="btn btn-primary" onclick="runAutomation()">Test Run</button>
+      </div>
+    </div>
+
+    <!-- MEMBERS TABLE -->
+    <div class="card table-card">
+      <div class="card-heading">
+        <div>
+          <h3>Members Table</h3>
+          <p>Track individual memberships, expiry dates, and outreach status.</p>
+        </div>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      </div>
+      <div class="table-wrap">
+        <table id="members-table">
+          <thead>
+            <tr>
+              <th>Member Name</th><th>Expiry Date</th><th>Phone</th><th>Outreach Status</th>
+            </tr>
+          </thead>
+          <tbody id="members-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- LOGS -->
+    <div class="card" style="margin-bottom:20px">
+      <div class="card-heading">
+        <div>
+          <h3>Automation Logs</h3>
+          <p>Detailed records of automated notifications and system runs.</p>
+        </div>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3h18v18H3zM9 3v18M15 3v18M3 9h18M3 15h18"/></svg>
+      </div>
+      <div class="log-summary-grid" id="log-summary"></div>
+      <div class="logs-list" id="logs-list"></div>
+    </div>
+
+    <!-- ANALYTICS -->
+    <div class="analytics-grid" id="analytics">
+      <!-- Donut -->
+      <div class="card chart-card">
+        <div class="card-heading">
+          <div><h3>Renewal Rate</h3><p>% of expiring memberships renewed.</p></div>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+        </div>
+        <div class="chart-visual">
+          <div class="donut-wrap">
+            <svg viewBox="0 0 180 180" id="donut-svg">
+              <circle cx="90" cy="90" r="70" fill="none" stroke="var(--bg-tertiary)" stroke-width="10"/>
+              <circle id="donut-arc" cx="90" cy="90" r="70" fill="none" stroke="var(--green)" stroke-width="10"
+                stroke-linecap="round" transform="rotate(-90 90 90)"/>
+            </svg>
+            <div class="donut-label">
+              <span id="donut-pct">78%</span>
+              <small>Target: 85%</small>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Risk bars -->
+      <div class="card chart-card" id="risk-card">
+        <div class="card-heading">
+          <div><h3>Members at Risk</h3><p>Expiries by urgency level.</p></div>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        </div>
+        <div id="risk-bars"></div>
+      </div>
+
+      <!-- Revenue chart -->
+      <div class="card chart-card revenue-chart">
+        <div class="card-heading">
+          <div><h3>Revenue Saved Trend</h3><p>Cumulative value of membership renewals secured.</p></div>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+        </div>
+        <svg width="100%" height="200" viewBox="0 0 600 200" preserveAspectRatio="none" id="rev-chart">
+          <defs>
+            <linearGradient id="rev-grad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#25d366" stop-opacity="0.15"/>
+              <stop offset="100%" stop-color="#25d366" stop-opacity="0"/>
+            </linearGradient>
+          </defs>
+          <line x1="0" y1="50" x2="600" y2="50" stroke="var(--border)" stroke-dasharray="4 4"/>
+          <line x1="0" y1="100" x2="600" y2="100" stroke="var(--border)" stroke-dasharray="4 4"/>
+          <line x1="0" y1="150" x2="600" y2="150" stroke="var(--border)" stroke-dasharray="4 4"/>
+          <path id="rev-line" d="M 0 170 Q 150 140 300 110 T 500 60 T 600 50" fill="none" stroke="var(--green)" stroke-width="2.5"/>
+          <path id="rev-fill" d="M 0 170 Q 150 140 300 110 T 500 60 T 600 50 L 600 195 L 0 195 Z" fill="url(#rev-grad)"/>
+          <circle id="rev-dot" cx="600" cy="50" r="5" fill="var(--green)"/>
+        </svg>
+      </div>
+    </div>
+
+  </div><!-- /dash-wrap -->
+</div><!-- /dash-page -->
+
+<!-- FOOTER -->
+<footer style="border-top:1px solid var(--border);padding:24px 48px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px">
+  <div class="lp-logo" style="font-size:15px">
+    <div class="lp-logo-dot" style="width:24px;height:24px;font-size:12px">💪</div>
+    GymFlow
+  </div>
+  <p style="font-size:12px;color:#444">© 2025 GymFlow by <a href="https://novabyte-ai-three.vercel.app" target="_blank" style="color:#666">NovaByte AI</a> · Made with ❤️ in India 🇮🇳</p>
+  <div style="display:flex;gap:20px">
+    <a href="#" style="font-size:12px;color:#555">Privacy</a>
+    <a href="#" style="font-size:12px;color:#555">Terms</a>
+    <a href="#" style="font-size:12px;color:#555">Contact</a>
+  </div>
+</footer>
+
+<!-- WA FLOAT -->
+<a href="https://wa.me/919999999999?text=Hi, I want to know more about GymFlow" class="wa-float" target="_blank">💬</a>
+
+<!-- TOAST -->
+<div class="toast" id="toast">
+  <span class="toast-icon">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+  </span>
+  <span id="toast-msg">Done!</span>
+  <button class="toast-close" onclick="hideToast()">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+  </button>
+</div>
+
+<!-- LOADING OVERLAY -->
+<div class="loading-overlay" id="loading-overlay" style="display:none">
+  <div class="loading-card">
+    <div class="spinner"></div>
+    <div>
+      <h4 class="loading-title">Scanning Subscriptions</h4>
+      <p class="loading-sub">Checking records, verifying expiries, and dispatching WhatsApp reminders...</p>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── STATE ────────────────────────────────────────────
+let runCount = 0;
+let metrics = {
+  totalMembers: 150,
+  expiringThisWeek: 12,
+  renewalRate: 78,
+  revenueSaved: 2800,
+  potentialRevenue: 4300,
+};
+let members = [
+  { id: 1, name: 'Rahul Sharma',  expiry: 'Jun 30', status: 'Pending',       phone: '+91 98765 43210' },
+  { id: 2, name: 'Priya Verma',   expiry: 'Jun 28', status: 'Reminder Sent', phone: '+91 87654 32109' },
+  { id: 3, name: 'Amit Kumar',    expiry: 'Jul 2',  status: 'Renewed',       phone: '+91 76543 21098' },
+  { id: 4, name: 'Sunita Singh',  expiry: 'Jun 25', status: 'Pending',       phone: '+91 99887 76655' },
+];
+let logs = [
+  { id: 1, type: 'Follow-up', title: 'Automated follow-up completed',         desc: '4 members ko 48 hour baad follow-up message bheja gaya.',             time: 'Aaj 9:00 AM' },
+  { id: 2, type: 'Reminder',  title: 'Subscription renewal reminders sent',    desc: '12 automated WhatsApp alerts bheje gaye 7 din mein expire hone ke liye.', time: 'Aaj 9:00 AM' },
+  { id: 3, type: 'Renewal',   title: 'Member renewal confirmed',               desc: 'Amit ne YES reply kiya. Subscription automatically renew ho gaya.',  time: 'Kal 4:15 PM' },
+];
+
+// ── RENDER METRICS ───────────────────────────────────
+function renderMetrics() {
+  const g = document.getElementById('metrics-grid');
+  const cards = [
+    { label: 'Total Members',     value: metrics.totalMembers,                          icon: peopleSvg(),    trend: null,      note: null,               hi: false },
+    { label: 'Expiring This Week',value: metrics.expiringThisWeek,                      icon: clockSvg(),     trend: '-8.3%',   note: null,               hi: false },
+    { label: 'Renewal Rate',      value: metrics.renewalRate + '%',                     icon: trendSvg(),     trend: runCount > 0 ? '+6%' : null, note: null, hi: false },
+    { label: 'Revenue Saved',     value: '₹' + metrics.revenueSaved.toLocaleString(),   icon: rupeeSvg(),     trend: runCount > 0 ? '+₹350' : null, note: null, hi: false },
+    { label: 'Potential Revenue', value: '₹' + metrics.potentialRevenue.toLocaleString(), icon: rupeeSvg(),   trend: null,      note: 'From pending & at-risk members', hi: true },
+  ];
+  g.innerHTML = cards.map(c => `
+    <div class="metric-card ${c.hi ? 'highlight' : ''}">
+      <div class="metric-top">
+        <span>${c.label}</span>
+        <div class="metric-icon">${c.icon}</div>
+      </div>
+      <div class="metric-val-row">
+        <strong class="metric-val">${c.value}</strong>
+        ${c.trend ? `<span class="metric-trend">${c.trend}</span>` : ''}
+      </div>
+      ${c.note ? `<p class="metric-note">${c.note}</p>` : ''}
+    </div>
+  `).join('');
+}
+
+// ── RENDER MEMBERS TABLE ─────────────────────────────
+function renderMembers() {
+  const tb = document.getElementById('members-tbody');
+  tb.innerHTML = members.map(m => `
+    <tr>
+      <td class="member-name">${m.name}</td>
+      <td>${m.expiry}</td>
+      <td>${m.phone}</td>
+      <td>${badgeHtml(m.status)}</td>
+    </tr>
+  `).join('');
+}
+function badgeHtml(s) {
+  if (s === 'Pending')      return `<span class="badge badge-pending">Pending</span>`;
+  if (s === 'Reminder Sent') return `<span class="badge badge-sent">Reminder Sent</span>`;
+  if (s === 'Renewed')      return `<span class="badge badge-renewed">Renewed</span>`;
+  return `<span class="badge">${s}</span>`;
+}
+
+// ── RENDER LOGS ──────────────────────────────────────
+function renderLogs() {
+  const remindersSent = 12 + runCount;
+  document.getElementById('log-summary').innerHTML = `
+    <div class="mini-stat"><span>Reminders Sent</span><strong>${remindersSent}</strong></div>
+    <div class="mini-stat"><span>Follow-ups Completed</span><strong>4</strong></div>
+    <div class="mini-stat"><span>Last Run Status</span><strong>${runCount > 0 ? 'Just Now' : '9:00 AM'}</strong></div>
+  `;
+  document.getElementById('logs-list').innerHTML = logs.map(l => `
+    <div class="log-item">
+      <div class="log-icon-con success">${logIcon(l.type)}</div>
+      <div class="log-content">
+        <div class="log-header-row"><h4>${l.title}</h4><span>${l.time}</span></div>
+        <p>${l.desc}</p>
+      </div>
+    </div>
+  `).join('');
+}
+function logIcon(t) {
+  if (t === 'Follow-up') return msgSvg();
+  if (t === 'Reminder')  return clockSvg();
+  if (t === 'Renewal')   return checkSvg();
+  if (t === 'Run')       return sparkSvg();
+  if (t === 'Member')    return peopleSvg();
+  return checkSvg();
+}
+
+// ── RENDER ANALYTICS ─────────────────────────────────
+function renderAnalytics() {
+  // Donut
+  const circ = 2 * Math.PI * 70;
+  const arc = document.getElementById('donut-arc');
+  arc.setAttribute('stroke-dasharray', circ);
+  arc.setAttribute('stroke-dashoffset', circ * (1 - metrics.renewalRate / 100));
+  document.getElementById('donut-pct').textContent = metrics.renewalRate + '%';
+
+  // Risk bars
+  const critical = members.filter(m => m.name === 'Priya Verma' && m.status !== 'Renewed').length;
+  const pending   = members.filter(m => m.status === 'Pending').length;
+  const sent      = members.filter(m => m.status === 'Reminder Sent').length;
+  document.getElementById('risk-bars').innerHTML = [
+    { label: 'Expiring Tomorrow (Critical)', count: critical, max: 1,              color: '#ef4444' },
+    { label: 'Expiring in 5 Days (Pending)', count: pending,  max: members.length, color: '#f59e0b' },
+    { label: 'Outreach Active / Reminder Sent', count: sent,  max: members.length, color: '#3b82f6' },
+  ].map(r => {
+    const w = Math.min((r.count / r.max) * 100, 100);
+    return `
+      <div class="risk-item">
+        <div class="risk-row"><span>${r.label}</span><strong>${r.count} member${r.count !== 1 ? 's' : ''}</strong></div>
+        <div class="risk-track"><div class="risk-fill" style="width:${w}%;background:${r.color}"></div></div>
+      </div>`;
+  }).join('');
+
+  // Revenue line
+  const high = metrics.revenueSaved > 2800;
+  document.getElementById('rev-line').setAttribute('d', high
+    ? 'M 0 170 Q 150 135 300 100 T 500 45 T 600 25'
+    : 'M 0 170 Q 150 140 300 110 T 500 60 T 600 50');
+  document.getElementById('rev-fill').setAttribute('d', high
+    ? 'M 0 170 Q 150 135 300 100 T 500 45 T 600 25 L 600 195 L 0 195 Z'
+    : 'M 0 170 Q 150 140 300 110 T 500 60 T 600 50 L 600 195 L 0 195 Z');
+  document.getElementById('rev-dot').setAttribute('cy', high ? '25' : '50');
+}
+
+// ── AUTOMATION RUN ───────────────────────────────────
+function runAutomation() {
+  document.getElementById('loading-overlay').style.display = 'flex';
+  document.getElementById('run-btn').disabled = true;
+  document.querySelectorAll('.btn-primary').forEach(b => b.disabled = true);
+
+  setTimeout(() => {
+    document.getElementById('loading-overlay').style.display = 'none';
+    document.querySelectorAll('.btn-primary').forEach(b => b.disabled = false);
+
+    runCount++;
+    members = members.map(m => m.status === 'Pending' ? { ...m, status: 'Reminder Sent' } : m);
+    metrics.renewalRate = 81;
+    metrics.revenueSaved = 2950;
+    metrics.expiringThisWeek = Math.max(metrics.expiringThisWeek - 1, 0);
+
+    const t = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    logs.unshift({ id: Date.now(), type: 'Run', title: 'Automation Completed', desc: 'Renewal reminders bhej diye gaye sab pending memberships ko.', time: `Aaj ${t}` });
+
+    document.getElementById('success-banner').style.display = 'flex';
+    renderAll();
+    showToast('12 reminders successfully bhej diye gaye');
+  }, 2000);
+}
+
+// ── ADD MEMBER ───────────────────────────────────────
+function addMember() {
+  const name   = document.getElementById('inp-name').value.trim();
+  const expiry = document.getElementById('inp-expiry').value.trim();
+  const phone  = document.getElementById('inp-phone').value.trim();
+  if (!name || !expiry) { showToast('Naam aur expiry date required hai'); return; }
+
+  const m = { id: Date.now(), name, expiry, phone: phone || 'Not provided', status: 'Pending' };
+  members.unshift(m);
+  metrics.totalMembers++;
+  metrics.expiringThisWeek++;
+  metrics.potentialRevenue += 300;
+  logs.unshift({ id: Date.now() + 1, type: 'Member', title: 'New member added', desc: `${name} renewal tracking mein add ho gaya.`, time: 'Abhi' });
+
+  document.getElementById('inp-name').value = '';
+  document.getElementById('inp-expiry').value = '';
+  document.getElementById('inp-phone').value = '';
+
+  renderAll();
+  showToast(`${name} successfully add ho gaya`);
+}
+
+// ── TOAST ────────────────────────────────────────────
+let toastTimer;
+function showToast(msg) {
+  document.getElementById('toast-msg').textContent = msg;
+  const t = document.getElementById('toast');
+  t.classList.add('visible');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('visible'), 4000);
+}
+function hideToast() { document.getElementById('toast').classList.remove('visible'); }
+
+// ── FAQ ──────────────────────────────────────────────
+function toggleFaq(el) {
+  const open = el.classList.contains('open');
+  document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'));
+  if (!open) el.classList.add('open');
+}
+
+// ── SCROLL REVEAL ────────────────────────────────────
+const io = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); io.unobserve(e.target); } });
+}, { threshold: 0.08 });
+document.querySelectorAll('.fade-up').forEach(el => io.observe(el));
+
+// ── RENDER ALL ───────────────────────────────────────
+function renderAll() {
+  renderMetrics();
+  renderMembers();
+  renderLogs();
+  renderAnalytics();
+}
+renderAll();
+
+// ── SVG ICONS (inline, no external deps) ─────────────
+function peopleSvg() { return `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>`; }
+function clockSvg()  { return `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>`; }
+function trendSvg()  { return `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>`; }
+function rupeeSvg()  { return `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>`; }
+function msgSvg()    { return `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>`; }
+function checkSvg()  { return `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>`; }
+function sparkSvg()  { return `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>`; }
+</script>
+</body>
 </html>
